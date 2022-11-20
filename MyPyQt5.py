@@ -1,6 +1,6 @@
-import typing
+import typing , sys
 import pandas
-from PyQt5.QtCore import (QCoreApplication, QEasingCurve, QPoint, QPointF,
+from PyQt5.QtCore import (QCoreApplication, QEasingCurve, QPoint, QPointF, QEvent ,
                           QPropertyAnimation, QRect, QRectF, QObject ,
                           QSequentialAnimationGroup, QSize, Qt, pyqtProperty,
                           pyqtSignal, pyqtSlot , QThread)
@@ -241,7 +241,7 @@ class AnimatedToggle(QCheckBox):
 class QSideMenuNewStyle(QWidget):
     def __init__(
             self,
-            parent,
+            parent:QWidget,
             ButtonsCount:int = 2,
             PagesCount:int = 2 ,
             ButtonsSpacing:int = 3 ,
@@ -287,7 +287,7 @@ class QSideMenuNewStyle(QWidget):
         self.MiniButton.setFixedSize(QSize(20,20))
         self.MiniButton.setIcon(QIcon(MiniButtonIconPath)) if MiniButtonIconPath != None else None
         self.horizontalLayout_2.addWidget(self.MiniButton, 0,Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignCenter)
-        self.MiniButton.clicked.connect(parent.parent().showMinimized)
+        self.MiniButton.clicked.connect(parent.showMinimized)
         self.MaxButton = QPushButton(self.TopFrame)
         
         self.MaxButton.setFlat(True)
@@ -529,14 +529,37 @@ class MyThread(QThread):
 
 
 
-# class MyQPushButton(QPushButton):
+class MyQMainWindow(QMainWindow):
+    App = QApplication(sys.argv)
+    Leaved = pyqtSignal()
+    Entered = pyqtSignal()
+    ShowSignal = pyqtSignal()
+    MessageBox = MyMessageBox()
+
+
+    def leaveEvent(self, a0:QEvent) -> None:
+        self.Leaved.emit()
+        return super().leaveEvent(a0)
+
+    def enterEvent(self, a0:QEvent) -> None:
+        self.Entered.emit()
+        return super().enterEvent(a0)
     
-#     def mousePressEvent(self, e: QMouseEvent) -> None:
+    def setFrameLess(self):
+        self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
+
+    def SetupUi(self,centeralWidget:QWidget):
+        self.setCentralWidget(centeralWidget)
+        self.show()
+
+    def setAppIcon(self,relativePath:str):
+        app_icon = QIcon()
+        app_icon.addFile(relativePath, QSize(16,16))
+        app_icon.addFile(relativePath, QSize(24,24))
+        app_icon.addFile(relativePath, QSize(32,32))
+        app_icon.addFile(relativePath, QSize(48,48))
+        app_icon.addFile(relativePath, QSize(256,256))
+        self.App.setWindowIcon(app_icon)
+    
+
         
-#         return super().mousePressEvent(e)
-
-
-#     def press(self):
-#         return super().mousePressEvent()
-
-

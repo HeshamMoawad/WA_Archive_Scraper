@@ -1,23 +1,20 @@
-from PyQt5 import QtCore , QtWidgets , QtGui
-from MyPyQt5 import  QSideMenuNewStyle ,MyThread,pyqtSignal , MyMessageBox
+from PyQt5 import  QtWidgets 
+from MyPyQt5 import  QSideMenuNewStyle ,MyThread,pyqtSignal , MyQMainWindow
 from pages import Page1 
 from styles import Styles
-import sqlite3
-
+import sys,requests
 from mainclass import Whatsapp
 
-class MyMainWindow():
-    def show(self):
-        self.MainWindow.show()
 
 
-    def Setup(self,MainWindow:QtWidgets.QMainWindow):
-        self.message = MyMessageBox()
 
-        self.MainWindow = MainWindow
-        MainWindow.resize(800,600)
-        MainWindow.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class MainWindow(MyQMainWindow):
+
+    def SetupUi(self):
+        
+        self.resize(800,600)
+        self.setFrameLess()
+        self.centralwidget = QtWidgets.QWidget()
         self.Menu = QSideMenuNewStyle(
             self.centralwidget,
             ButtonsCount = 1 ,
@@ -31,7 +28,8 @@ class MyMainWindow():
             Mini_MaxButtonIconPath = "Data\Icons\minimize.png",
             ButtonsFixedHight=50
             )
-
+        self.Leaved.connect(lambda: self.Menu.MainLabel.setText("رايح فين يا ابو الصحاب"))
+        self.Entered.connect(lambda: self.Menu.MainLabel.setText("ايو كدا ركز معايا هنا و حمدالله ع السلامة "))
         self.FirstPage = self.Menu.GetPage(0)
         self.FirstPage.setStyleSheet("background-color:#C1C1C1;")
         self.Button = self.Menu.GetButton(0)
@@ -40,18 +38,31 @@ class MyMainWindow():
         self.Page1 = Page1(self.FirstPage)
         self.Menu.DarkModetoggle.stateChanged.connect(self.darkmode)
         
+        try : 
+            requests.get("https://www.google.com")
+            self.InterNetConnection = True
+        except Exception as e :
+            self.InterNetConnection = False 
+
+        if not self.InterNetConnection :
+            self.MessageBox.showCritical(text="No InterNetConnection here امشى اطلع بره" ) 
+        elif self.InterNetConnection :
+            self.MessageBox.showInfo(text="كله under control")
+
         # Thread Part 
         self.thread = Thread()
-        self.thread.mesg.connect(self.message.showInfo)
+        self.thread.mesg.connect(self.MessageBox.showInfo)
         self.thread.statues.connect(self.Menu.MainLabel.setText)
         self.thread.LeadSignal.connect(self.Page1.treeWidget.appendData)
         self.Page1.StartButton.clicked.connect(self.thread.start)
         self.Page1.StopButton.clicked.connect(self.thread.kill)
-        MainWindow.setCentralWidget(self.centralwidget)
+        return super().SetupUi(self.centralwidget)
 
 
     def darkmode(self):
+
         if self.Menu.DarkModetoggle.isChecked():
+
             self.FirstPage.setStyleSheet("background-color:black;color:white;")
             self.Menu.BottomFrame.setStyleSheet(Styles.APP_DARK)
             self.Menu.TopFrame.setStyleSheet(Styles.APP_DARK)
@@ -64,7 +75,9 @@ class MyMainWindow():
             self.Page1.StopButton.setStyleSheet(Styles.BUTTON_RUN_DARK)
             self.Page1.treeWidget.setStyleSheet("background-color:white;color:black;")
             self.Menu.MenuButton.setStyleSheet(Styles.BUTTON_DARK)
+
         else:
+
             self.Menu.BottomFrame.setStyleSheet(Styles.APP)
             self.Menu.TopFrame.setStyleSheet(Styles.APP)
             self.Menu.ExitButton.setStyleSheet(Styles.BUTTON)
@@ -79,9 +92,6 @@ class MyMainWindow():
             self.Menu.MenuButton.setStyleSheet(Styles.BUTTON)
 
 
-
-
-
 class Thread(MyThread):
     LeadSignal= pyqtSignal(list)
     mesg = pyqtSignal(str)
@@ -92,23 +102,13 @@ class Thread(MyThread):
         self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
         ui.Page1.StopSignal.connect(self.Whatsapp.contenue)
         self.Whatsapp.scrape_Archive()
-        self.Whatsapp.exit()
+        # self.Whatsapp.exit()
         self.statues.emit("حلو اوى كده بالصلاه على النبى")
         self.mesg.emit("حلو اوى كده بالصلاه على النبى")
 
-if __name__ == "__main__":
-    import sys,requests
-    app = QtWidgets.QApplication(sys.argv)
-    app_icon = QtGui.QIcon()
-    app_icon.addFile('Data\Icons\Capture.PNG', QtCore.QSize(16,16))
-    app_icon.addFile('Data\Icons\Capture.PNG', QtCore.QSize(24,24))
-    app_icon.addFile('Data\Icons\Capture.PNG', QtCore.QSize(32,32))
-    app_icon.addFile('Data\Icons\Capture.PNG', QtCore.QSize(48,48))
-    app_icon.addFile('Data\Icons\Capture.PNG', QtCore.QSize(256,256))
-    app.setWindowIcon(app_icon)
 
-    MainWindow = QtWidgets.QMainWindow()
-    ui = MyMainWindow()
-    ui.Setup(MainWindow)
-    ui.show()
-    sys.exit(app.exec_())
+if __name__ == "__main__":
+    import sys
+    ui = MainWindow()
+    ui.SetupUi()
+    sys.exit(ui.App.exec_())
