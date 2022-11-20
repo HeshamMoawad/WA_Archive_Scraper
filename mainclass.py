@@ -32,14 +32,15 @@ class Whatsapp(QObject):
         option.headless = self.headless
         option.add_experimental_option("excludeSwitches", ["enable-logging"])
         option.add_argument('--disable-logging')
-        # dir_path = os.getcwd()
-        # profile = os.path.join(dir_path, "profile", "facebook")
-        # option.add_argument(r"user-data-dir={}".format(profile))
+        dir_path = os.getcwd()
+        profile = os.path.join(dir_path, "profiles", "SoudiNumber")
+        option.add_argument(r"user-data-dir={}".format(profile))
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),options=option)
         self.driver.maximize_window()
         self.driver.get("https://web.whatsapp.com/")
         self.wait = WebDriverWait(self.driver, 500)
         self.wait.until(EC.presence_of_element_located((By.XPATH,"//*[@data-testid='chatlist-header']")))   
+        self.leadCount = 0
         QThread.sleep(5)
         super().__init__()
     
@@ -89,38 +90,40 @@ class Whatsapp(QObject):
         arg = (by,val)
         return self.wait.until(EC.element_to_be_clickable(arg))
         
-    def scrape_Archive(self):
+    def scrape_Archive(self,max:int):
         QThread.sleep(5)
         self.wait_elm("//div[@class='_2nY6U _1frFQ'] //div[@class='_3OvU8']").click()
-        # self.jscode("""document.querySelector('div[class="_2nY6U _1frFQ"] div[class="_3OvU8"]').click()""")
         maxhight = self.jscode(self.MAX_SCROLL)
         current = self.jscode(self.SCROLL_DOWN_TO.replace("index","0"))
-        while current < maxhight and self.cont :
+
+        while current < maxhight and self.leadCount < max:
             self.wait_elms("//div[@data-testid='cell-frame-container']",timeout=10)
             ###
             elms = self.jscode(self.GET_NUMBERS_LIST)
             for index in range(len(elms)):
-                if self.cont:
-                    phone = self.jscode(self.GET_PHONE.replace("index",f"{index}"))
-                    phone = "+"+(f"{phone}".split("+")[-1][:15]) if "+" in phone else phone
-                    last_msg = self.jscode(self.LAST_MSG.replace("index",f"{index}"))
-                    time = datetime.now()
-                    if not self.exist("Numbers","Number",f"{phone}") and self.cont:
-                        self.add_to_db(
-                        table= "Numbers",
-                        Number = phone,
-                        LastMsg = last_msg ,
-                        Time = f"{time.date()}-{time.hour}-{time.minute}-{time.second}"
-                        )
-                        if "+" in phone:
-                            self.LeadSignal.emit([phone,last_msg])
+                if self.leadCount > max :
+                    break
+                phone = self.jscode(self.GET_PHONE.replace("index",f"{index}"))
+                phone = "+"+(f"{phone}".split("+")[-1][:15]) if "+" in phone else phone
+                last_msg = self.jscode(self.LAST_MSG.replace("index",f"{index}"))
+                time = datetime.now()
+                if not self.exist("Numbers","Number",f"{phone}"):
+
+                    self.add_to_db(
+                    table= "Numbers",
+                    Number = phone,
+                    LastMsg = last_msg ,
+                    Time = f"{time.date()}-{time.hour}-{time.minute}-{time.second}"
+                    )
+
+                    if "+" in phone:
+                        self.LeadSignal.emit([phone,last_msg])
+                        self.leadCount = self.leadCount + 1
             ###
             self.jscode(self.SCROLL_DOWN_TO.replace("index",f"{self.jscode(self.CURRENT_HIGHT)+300}"))
             current = self.jscode(self.CURRENT_HIGHT)
             maxhight = self.jscode(self.MAX_HIGHT)
 
-    def contenue(self,c:bool):
-        self.cont = c
 
     def exit(self):
         try:

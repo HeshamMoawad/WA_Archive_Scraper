@@ -6,7 +6,6 @@ from styles import Styles
 from datetime import datetime
 
 class Page1(QObject):
-    StopSignal = pyqtSignal(bool)
     msg = MyMessageBox()
 
     def __init__(self, parent:typing.Optional[QtWidgets.QWidget]):
@@ -23,7 +22,7 @@ class Page1(QObject):
         self.spinBox = QtWidgets.QSpinBox(self.FirstFrame)
         self.spinBox.setStyleSheet(Styles.SPINBOX)
         self.spinBox.setMaximum(10000)
-        self.spinBox.setMinimum(1)
+        self.spinBox.setMinimum(10)
         self.horizontalLayout_2.addWidget(self.spinBox)
         self.horizontalLayout_2.setStretch(0, 5)
         self.horizontalLayout_2.setStretch(1, 1)
@@ -49,7 +48,7 @@ class Page1(QObject):
         self.verticalLayout.addWidget(self.ButtonsFrame)
         self.treeWidget = MyQTreeWidget(parent)
         self.treeWidget.setColumns(["Phone","Last Message"])
-        self.treeWidget.onLengthChanged.connect(lambda: self.counter(self.treeWidget._ROW_INDEX,self.spinBox.value()))
+        self.treeWidget.onLengthChanged.connect(self.counter)
         self.treeWidget.setColumnWidth(0,300)
         self.treeWidget.setStyleSheet("background-color:white;color:black;font:16px bold;")
         self.treeWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -64,10 +63,8 @@ class Page1(QObject):
         self.verticalLayout.setStretch(3,0)
         super().__init__()
 
-    def counter(self,count:int,max:typing.Optional[int]=None):
-        self.CounterLabel.setText(f"Count : {count} Max : {max}")
-        if max != None and count >= max :
-            self.StopSignal.emit(False)
+    def counter(self,count:int):
+        self.CounterLabel.setText(f"Count : {count}")
 
 
     def menu(self):

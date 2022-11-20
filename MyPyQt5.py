@@ -520,13 +520,17 @@ class MyThread(QThread):
         if self.isRunning():
             self.terminate()
             try :
-                self.Twitter.exit()
+                self.Whatsapp.exit()
             except AttributeError :
                 pass
             self.wait()
             if msg:
                 self.msg.showCritical(text="  كفااااااااااااية  ")
-
+    def start(self, priority: 'QThread.Priority' = ...) -> None:
+        if self.isRunning():
+            pass
+        else:
+            return super().start(priority)
 
 
 class MyQMainWindow(QMainWindow):

@@ -58,6 +58,7 @@ class MainWindow(MyQMainWindow):
         self.Page1.StopButton.clicked.connect(self.thread.kill)
         return super().SetupUi(self.centralwidget)
 
+    
 
     def darkmode(self):
 
@@ -97,11 +98,12 @@ class Thread(MyThread):
     mesg = pyqtSignal(str)
 
     def run(self) -> None:
+
         self.statues.emit("يلا اسعتنا على الشقا بالله ^_^ ")
+            
         self.Whatsapp = Whatsapp(ui.Menu.Hidetoggle.isChecked())
         self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
-        ui.Page1.StopSignal.connect(self.Whatsapp.contenue)
-        self.Whatsapp.scrape_Archive()
+        self.Whatsapp.scrape_Archive(ui.Page1.spinBox.value())
         self.Whatsapp.exit()
         self.statues.emit("حلو اوى كده بالصلاه على النبى")
         self.mesg.emit("حلو اوى كده بالصلاه على النبى")
