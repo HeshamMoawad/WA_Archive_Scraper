@@ -536,8 +536,7 @@ class MyQMainWindow(QMainWindow):
     ShowSignal = pyqtSignal()
     MessageBox = MyMessageBox()
 
-
-    def leaveEvent(self, a0:QEvent) -> None:
+    def leaveEvent(self, a0:QEvent) -> None: 
         self.Leaved.emit()
         return super().leaveEvent(a0)
 
@@ -551,6 +550,7 @@ class MyQMainWindow(QMainWindow):
     def SetupUi(self,centeralWidget:QWidget):
         self.setCentralWidget(centeralWidget)
         self.show()
+        sys.exit(self.App.exec_())
 
     def setAppIcon(self,relativePath:str):
         app_icon = QIcon()

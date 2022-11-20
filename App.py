@@ -11,7 +11,7 @@ from mainclass import Whatsapp
 class MainWindow(MyQMainWindow):
 
     def SetupUi(self):
-        
+        self.setAppIcon("Data\Icons\data-mining.png")
         self.resize(800,600)
         self.setFrameLess()
         self.centralwidget = QtWidgets.QWidget()
@@ -29,7 +29,7 @@ class MainWindow(MyQMainWindow):
             ButtonsFixedHight=50
             )
         self.Leaved.connect(lambda: self.Menu.MainLabel.setText("رايح فين يا ابو الصحاب"))
-        self.Entered.connect(lambda: self.Menu.MainLabel.setText("ايو كدا ركز معايا هنا و حمدالله ع السلامة "))
+        self.Entered.connect(lambda: self.Menu.MainLabel.setText("ايوه ركز معايا هنا "))
         self.FirstPage = self.Menu.GetPage(0)
         self.FirstPage.setStyleSheet("background-color:#C1C1C1;")
         self.Button = self.Menu.GetButton(0)
@@ -102,7 +102,7 @@ class Thread(MyThread):
         self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
         ui.Page1.StopSignal.connect(self.Whatsapp.contenue)
         self.Whatsapp.scrape_Archive()
-        # self.Whatsapp.exit()
+        self.Whatsapp.exit()
         self.statues.emit("حلو اوى كده بالصلاه على النبى")
         self.mesg.emit("حلو اوى كده بالصلاه على النبى")
 
@@ -111,4 +111,3 @@ if __name__ == "__main__":
     import sys
     ui = MainWindow()
     ui.SetupUi()
-    sys.exit(ui.App.exec_())

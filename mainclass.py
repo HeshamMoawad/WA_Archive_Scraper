@@ -115,7 +115,7 @@ class Whatsapp(QObject):
                         if "+" in phone:
                             self.LeadSignal.emit([phone,last_msg])
             ###
-            self.jscode(self.SCROLL_DOWN_TO.replace("index",f"{self.jscode(self.CURRENT_HIGHT)+500}"))
+            self.jscode(self.SCROLL_DOWN_TO.replace("index",f"{self.jscode(self.CURRENT_HIGHT)+300}"))
             current = self.jscode(self.CURRENT_HIGHT)
             maxhight = self.jscode(self.MAX_HIGHT)
 
@@ -128,7 +128,7 @@ class Whatsapp(QObject):
         except :
             pass
         self.wait_elm("//*[@id='app']/div/div/div[3]/header/div[2]/div/span/div[3]/div/span",timeout=5).click()
-        self.wait_elm("//*[@aria-label='Log out']",timeout=5).click()
+        self.wait_elm("//li[@data-testid='mi-logout menu-item'] //div[@class='_2oldI dJxPU'][@role='button']",timeout=5).click()
         self.wait_elm("//*[@data-testid='popup-controls-ok']",timeout=5).click()
         QThread.sleep(3)
         self.driver.quit()

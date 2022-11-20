@@ -49,7 +49,7 @@ class Page1(QObject):
         self.verticalLayout.addWidget(self.ButtonsFrame)
         self.treeWidget = MyQTreeWidget(parent)
         self.treeWidget.setColumns(["Phone","Last Message"])
-        self.treeWidget.onLengthChanged.connect(self.counter)
+        self.treeWidget.onLengthChanged.connect(lambda: self.counter(self.treeWidget._ROW_INDEX,self.spinBox.value()))
         self.treeWidget.setColumnWidth(0,300)
         self.treeWidget.setStyleSheet("background-color:white;color:black;font:16px bold;")
         self.treeWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -65,7 +65,7 @@ class Page1(QObject):
         super().__init__()
 
     def counter(self,count:int,max:typing.Optional[int]=None):
-        self.CounterLabel.setText(f"Count : {count}")
+        self.CounterLabel.setText(f"Count : {count} Max : {max}")
         if max != None and count >= max :
             self.StopSignal.emit(False)
 
@@ -113,8 +113,8 @@ class Page1(QObject):
     def export(self,name:typing.Optional[str]):
         if self.treeWidget._ROW_INDEX > 0 :
             time = datetime.now()
-            self.treeWidget.extract_data_to_DataFrame().to_excel(f"Data/Exports/{name}[{time.date()}-{time.hour}-{time.minute}-{time.second}].xlsx",index=False)
-            self.msg.showInfo(text=f"Exported Succecfully to 'Data/Exports/{name}[{time.date()}-{time.hour}-{time.minute}-{time.second}].xlsx'")
+            self.treeWidget.extract_data_to_DataFrame().to_excel(f"Data/Exports/{name}({time.date()})({time.hour}-{time.minute}-{time.second}).xlsx",index=False)
+            self.msg.showInfo(text=f"Exported Succecfully to 'Data/Exports/{name}({time.date()})({time.hour}-{time.minute}-{time.second}).xlsx'")
         else :
             self.msg.showWarning(text="No Data In App Please Try Again Later")
 
