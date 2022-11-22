@@ -2,7 +2,7 @@ from PyQt5 import  QtWidgets
 from MyPyQt5 import  QSideMenuNewStyle ,MyThread,pyqtSignal , MyQMainWindow
 from pages import Page1 
 from styles import Styles
-import sys,requests
+import requests
 from mainclass import Whatsapp
 
 
@@ -101,7 +101,7 @@ class Thread(MyThread):
 
         self.statues.emit("يلا اسعتنا على الشقا بالله ^_^ ")
             
-        self.Whatsapp = Whatsapp(ui.Menu.Hidetoggle.isChecked())
+        self.Whatsapp = Whatsapp(ui.Menu.Hidetoggle.isChecked(),ui.Menu.DarkModetoggle.isChecked())
         self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
         self.Whatsapp.scrape_Archive(ui.Page1.spinBox.value())
         self.Whatsapp.exit()

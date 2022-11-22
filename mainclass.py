@@ -23,7 +23,7 @@ class Whatsapp(QObject):
     LAST_MSG = """return numbers[index].querySelector("span[class='Hy9nV']").textContent ;"""
 
 
-    def __init__(self,headless) -> None:
+    def __init__(self,headless,DarkMode:typing.Optional[bool]=False) -> None:
         self.cont = True
         self.headless = headless
         self.con = sqlite3.connect("Data\Database.db")
@@ -32,6 +32,7 @@ class Whatsapp(QObject):
         option.headless = self.headless
         option.add_experimental_option("excludeSwitches", ["enable-logging"])
         option.add_argument('--disable-logging')
+        option.add_argument("--force-dark-mode") if DarkMode != False else None
         dir_path = os.getcwd()
         profile = os.path.join(dir_path, "profiles", "SoudiNumber")
         option.add_argument(r"user-data-dir={}".format(profile))
