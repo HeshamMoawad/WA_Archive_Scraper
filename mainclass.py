@@ -93,7 +93,7 @@ class Whatsapp(QObject):
         
     def scrape_Archive(self,max:int):
         QThread.sleep(5)
-        self.wait_elm("//div[@class='_2nY6U _1frFQ'] //div[@class='_3OvU8']").click()
+        self.wait_elm("//div[@class='_2nY6U _1frFQ'] //div[@class='_3OvU8']",timeout=70).click()
         maxhight = self.jscode(self.MAX_SCROLL)
         current = self.jscode(self.SCROLL_DOWN_TO.replace("index","0"))
 
@@ -106,18 +106,19 @@ class Whatsapp(QObject):
                     break
                 phone = self.jscode(self.GET_PHONE.replace("index",f"{index}"))
                 phone = "+"+(f"{phone}".split("+")[-1][:15]) if "+" in phone else phone
-                last_msg = self.jscode(self.LAST_MSG.replace("index",f"{index}"))
+                try:
+                    last_msg = self.jscode(self.LAST_MSG.replace("index",f"{index}"))
+                except Exception as e :
+                    last_msg = "Can't Read Last Message"
                 time = datetime.now()
                 if not self.exist("Numbers","Number",f"{phone}"):
-
                     self.add_to_db(
                     table= "Numbers",
                     Number = phone,
                     LastMsg = last_msg ,
                     Time = f"{time.date()}-{time.hour}-{time.minute}-{time.second}"
                     )
-
-                    if "+" in phone:
+                    if "+966 5" in phone:
                         self.LeadSignal.emit([phone,last_msg])
                         self.leadCount = self.leadCount + 1
             ###

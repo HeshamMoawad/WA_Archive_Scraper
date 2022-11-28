@@ -100,13 +100,17 @@ class Thread(MyThread):
     def run(self) -> None:
 
         self.statues.emit("يلا اسعتنا على الشقا بالله ^_^ ")
-            
-        self.Whatsapp = Whatsapp(ui.Menu.Hidetoggle.isChecked(),ui.Menu.DarkModetoggle.isChecked())
-        self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
-        self.Whatsapp.scrape_Archive(ui.Page1.spinBox.value())
-        self.Whatsapp.exit()
-        self.statues.emit("حلو اوى كده بالصلاه على النبى")
-        self.mesg.emit("حلو اوى كده بالصلاه على النبى")
+        try:
+            self.Whatsapp = Whatsapp(ui.Menu.Hidetoggle.isChecked(),ui.Menu.DarkModetoggle.isChecked())
+            con = True
+        except Exception as e :
+            con = False
+            self.mesg.emit("حاااااااااااااااااااسب")
+        if con:
+            self.Whatsapp.LeadSignal.connect(self.LeadSignal.emit)
+            self.Whatsapp.scrape_Archive(ui.Page1.spinBox.value())
+            self.statues.emit("حلو اوى كده بالصلاه على النبى")
+            self.mesg.emit("حلو اوى كده بالصلاه على النبى")
 
 
 if __name__ == "__main__":

@@ -449,6 +449,7 @@ class QFrameDraggable(QFrame):
         self.parent().parent().move(self.parent().parent().x() + delta.x(), self.parent().parent().y() + delta.y())
         self.oldPos = event.globalPos()
 
+        
 class MyMessageBox(QMessageBox):
     INFO = QMessageBox.Icon.Information
     WARNING = QMessageBox.Icon.Warning
@@ -519,10 +520,6 @@ class MyThread(QThread):
     def kill(self,msg:typing.Optional[bool]):
         if self.isRunning():
             self.terminate()
-            try :
-                self.Whatsapp.exit()
-            except AttributeError :
-                pass
             self.wait()
             if msg:
                 self.msg.showCritical(text="  كفااااااااااااية  ")
